@@ -1,19 +1,5 @@
-import mysql.connector
+#new file
 from PyQt5 import QtCore, QtGui, QtWidgets
-mydb = mysql.connector.connect(
-          host="localhost",
-          user="root",
-          passwd="",
-          database="smartward"
-        )
-mycursor = mydb.cursor()
-sql = "SELECT * FROM users"
-mycursor.execute(sql)
-records = mycursor.fetchall()
-username=[]
-for row in records:
-    username.append(row[3])
-mycursor.close()
 
 
 class Ui_MainWindow(object):
@@ -51,21 +37,18 @@ class Ui_MainWindow(object):
         self.clearsignuppage()
         self.clearsignuplabels()
         self.password_edit.setText("")
-        self.password_edit.setEchoMode(QtWidgets.QLineEdit.Password)
         
     def refertologin(self):###refers to login page
         self.stackedWidget.setCurrentIndex(2)
         MainWindow.setWindowTitle("Smartward-Login")
         self.clearsignuppage()
         self.clearsignuplabels()
-        self.password_edit.setEchoMode(QtWidgets.QLineEdit.Password)
         
     def refertosignup(self):###refers to signup page
         self.stackedWidget.setCurrentIndex(1)
         MainWindow.setWindowTitle("Smartward-Signup")
         self.clearsigninlabel()
         self.password_edit.setText("")
-        self.password_edit.setEchoMode(QtWidgets.QLineEdit.Password)
         
     def exitwindow():
         Mainwindow.close
@@ -80,32 +63,25 @@ class Ui_MainWindow(object):
 
     ####for signup#####################################################################
     def signupfxn(self):        
-        fname_su= self.signup_fname_edit.text().title().strip()
-        lname_su= self.signup_lname_edit.text().title().strip()
-        username_su=self.signup_username_edit.text().lower().strip()
-        password_su=self.signup_password_edit.text().strip()
-        repassword_su=self.signup_repassword_edit.text().strip()
-        year_su=self.signup_year_edit.text().strip()
-        month_su=self.signup_month_edit.text().strip()
-        date_su=self.signup_day_edit.text().strip()
+        fname_su= self.signup_fname_edit.text().title()
+        lname_su= self.signup_lname_edit.text().title()
+        username_su=self.signup_username_edit.text()
+        password_su=self.signup_password_edit.text()
+        repassword_su=self.signup_repassword_edit.text()
+        year_su=self.signup_year_edit.text()
+        month_su=self.signup_month_edit.text()
+        date_su=self.signup_day_edit.text()
         dob_su=str(year_su)+"/"+str(month_su)+"/"+str(date_su)
         if ((fname_su!="" or lname_su!="") and (password_su!="") and (repassword_su!="") and (year_su!="") and (month_su!="") and (date_su!="") and (username_su!="")):
-            if ((username_su=="admin")):              
+            if ((username_su=="admin") or (username_su=="smartward")):              
                 self.signup_username_edit.setText("")
                 self.username_error_label.setText("Username taken.")
             else:
                 if (password_su==repassword_su):
-                    mycursor=mydb.cursor()
-                    sql = "INSERT INTO users (firstname,lastname,username,password,dob_year,dob_month,dob_date) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-                    val = (fname_su,lname_su,username_su,password_su,year_su,month_su,date_su)
-                    mycursor.execute(sql, val)
-                    mydb.commit()
-                    mycursor.close()
-                    print ("......................................")
-                    print ("Signup Successful.")
-                    print ("......................................")
-                    username.append(username_su)
-                    #print (username)
+                    print ("First Name: ",fname_su)
+                    print ("Last Name: ",lname_su)
+                    print ("Username: ",username_su)
+                    print ("Date of Birth: ",dob_su)
                     self.clearsignuplabels()
                     self.username_edit.setText("")                                       
                     self.refertologin()                    
@@ -114,53 +90,39 @@ class Ui_MainWindow(object):
                     self.signup_repassword_edit.setText("")
                     self.repass_error_label.setText("Password do not match.")
         else:
-            self.repass_error_label.setText("Empty field.")           
-                         
+            self.repass_error_label.setText("Empty field.")             
         
     ####################################################################################################
 
     ####for signin#####################################################################################
     def loginfxn(self):        
-        uname_login=self.username_edit.text().lower().strip()
-        password_login=self.password_edit.text().strip()
-        mycursor = mydb.cursor(buffered=True)
-        sql = "SELECT * FROM users WHERE username=%s"
-        mycursor.execute(sql,(uname_login,))        
-        records = mycursor.fetchall()
-        for row in records:
-            usernamefromdb=row[3].strip().lower()
-            passwordfromdb=row[4].strip()
-        if (uname_login=="" or password_login==""):
-            self.sign_empty_error_label.setText("Username or password empty.")          
-        else:            
+        uname_login=self.username_edit.text()
+        password_login=self.password_edit.text()
+        if ((uname_login!="")and(password_login!="")):
             self.sign_empty_error_label.setText("")
-            if (uname_login not in username):
-                self.sign_empty_error_label.setText("Not allowed.")
-                self.password_edit.setEchoMode(QtWidgets.QLineEdit.Password)
-                password_login=self.password_edit.setText("")              
-            elif (uname_login==usernamefromdb and password_login==passwordfromdb):
+            if ((uname_login=="admin" and password_login=="admin") or (uname_login=="smartward" and password_login=="smartward")):
                 if (uname_login=="admin" and password_login=="admin"):
                     self.stackedWidget.setCurrentIndex(4)
-                    self.statusbar.showMessage("Logged In.(Admin):"+str(uname_login)+"                          "+"© Smartward")
-                    print('Logged in as Admin.:'+str(uname_login))
-                    MainWindow.setWindowTitle("SmartWard-Admin- Welcome "+str(uname_login))
+                    self.statusbar.showMessage("Logged In.(Admin)"+"           "+"admin-username="+str(uname_login)+"           "+"© Smartward")
+                    print('Logged in as admin :'+ str(uname_login))
+                    MainWindow.setWindowTitle("SmartWard-Admin - Welcome "+str(uname_login))
                     password_login=self.password_edit.setText("")
-                else:
+                else:                    
                     self.stackedWidget.setCurrentIndex(3)
-                    self.statusbar.showMessage("Logged In.(User):"+str(uname_login)+"                          "+"© Smartward")
-                    print('Logged in as User.:'+str(uname_login))
+                    self.statusbar.showMessage("Logged In.(User)"+"           "+"username="+str(uname_login)+"           "+"© Smartward")
+                    print('Logged in as user :'+ str(uname_login))
                     MainWindow.setWindowTitle("SmartWard-User- Welcome "+str(uname_login))
                     password_login=self.password_edit.setText("")
             else:
                 self.sign_empty_error_label.setText("Not allowed.")
-                self.password_edit.setEchoMode(QtWidgets.QLineEdit.Password)
                 password_login=self.password_edit.setText("")
-        mycursor.close()
+        else:
+            self.sign_empty_error_label.setText("Username or password empty.")
     ####################################################################################################
 
     def setupUi(self, MainWindow):
-        MainWindow.setObjectName("MainWindow")        
-        MainWindow.setFixedSize(800, 600)
+        MainWindow.setObjectName("MainWindow")
+        MainWindow.resize(800, 600)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("logo.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
@@ -508,13 +470,7 @@ class Ui_MainWindow(object):
         self.username_edit.setAlignment(QtCore.Qt.AlignCenter)
         self.username_edit.setObjectName("username_edit")
         ##############################################################################
-        completer=QtWidgets.QCompleter(sorted(username))
-        font = QtGui.QFont()
-        font.setPointSize(16)
-        completer.popup().setFont(font)
-        completer.setCaseSensitivity(QtCore.Qt.CaseInsensitive)
-        self.username_edit.setCompleter(completer)
-        #self.username_edit.returnPressed.connect(self.loginfxn)        
+        self.username_edit.returnPressed.connect(self.loginfxn)        
         #############################################################################
         self.password_edit = QtWidgets.QLineEdit(self.signin_box)
         self.password_edit.setGeometry(QtCore.QRect(130, 150, 221, 51))
@@ -640,7 +596,7 @@ class Ui_MainWindow(object):
         font.setPointSize(18)
         self.Welcome_label.setFont(font)
         self.Welcome_label.setStyleSheet("background:yellow;\n"
-"color:black;\n""border-radius:20px;")
+"color:black;")
         self.Welcome_label.setAlignment(QtCore.Qt.AlignCenter)
         self.Welcome_label.setObjectName("Welcome_label")       
 
@@ -689,7 +645,7 @@ class Ui_MainWindow(object):
         font.setPointSize(18)
         self.Welcome_label_admin.setFont(font)
         self.Welcome_label_admin.setStyleSheet("background:yellow;\n"
-"color:black;\n""border-radius:20px;")
+"color:black;")
         self.Welcome_label_admin.setAlignment(QtCore.Qt.AlignCenter)
         self.Welcome_label_admin.setObjectName("Welcome_label_admin")
 
