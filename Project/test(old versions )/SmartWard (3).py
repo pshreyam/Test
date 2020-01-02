@@ -1,19 +1,5 @@
-import mysql.connector
+#new file
 from PyQt5 import QtCore, QtGui, QtWidgets
-mydb = mysql.connector.connect(
-          host="localhost",
-          user="root",
-          passwd="",
-          database="smartward"
-        )
-mycursor = mydb.cursor()
-sql = "SELECT * FROM users"
-mycursor.execute(sql)
-records = mycursor.fetchall()
-username=[]
-for row in records:
-    username.append(row[3])
-mycursor.close()
 
 
 class Ui_MainWindow(object):
@@ -37,12 +23,9 @@ class Ui_MainWindow(object):
         
     def logout(self):
         self.stackedWidget.setCurrentIndex(2)
-        self.statusbar.showMessage("© Smartward")
         MainWindow.setWindowTitle("Smartward-Login")
         print("Logged out.")
-        self.password_edit.setEchoMode(QtWidgets.QLineEdit.Password)
         self.sign_empty_error_label.setText("Logged Out.")
-      
         
     def refertohome(self):###refers to home page
         self.stackedWidget.setCurrentIndex(0)
@@ -51,21 +34,18 @@ class Ui_MainWindow(object):
         self.clearsignuppage()
         self.clearsignuplabels()
         self.password_edit.setText("")
-        self.password_edit.setEchoMode(QtWidgets.QLineEdit.Password)
         
     def refertologin(self):###refers to login page
         self.stackedWidget.setCurrentIndex(2)
         MainWindow.setWindowTitle("Smartward-Login")
         self.clearsignuppage()
         self.clearsignuplabels()
-        self.password_edit.setEchoMode(QtWidgets.QLineEdit.Password)
         
     def refertosignup(self):###refers to signup page
         self.stackedWidget.setCurrentIndex(1)
         MainWindow.setWindowTitle("Smartward-Signup")
         self.clearsigninlabel()
         self.password_edit.setText("")
-        self.password_edit.setEchoMode(QtWidgets.QLineEdit.Password)
         
     def exitwindow():
         Mainwindow.close
@@ -80,97 +60,70 @@ class Ui_MainWindow(object):
 
     ####for signup#####################################################################
     def signupfxn(self):        
-        fname_su= self.signup_fname_edit.text().title().strip()
-        lname_su= self.signup_lname_edit.text().title().strip()
-        username_su=self.signup_username_edit.text().lower().strip()
-        password_su=self.signup_password_edit.text().strip()
-        repassword_su=self.signup_repassword_edit.text().strip()
-        year_su=self.signup_year_edit.text().strip()
-        month_su=self.signup_month_edit.text().strip()
-        date_su=self.signup_day_edit.text().strip()
+        fname_su= self.signup_fname_edit.text().title()
+        lname_su= self.signup_lname_edit.text().title()
+        username_su=self.signup_username_edit.text()
+        password_su=self.signup_password_edit.text()
+        repassword_su=self.signup_repassword_edit.text()
+        year_su=self.signup_year_edit.text()
+        month_su=self.signup_month_edit.text()
+        date_su=self.signup_day_edit.text()
         dob_su=str(year_su)+"/"+str(month_su)+"/"+str(date_su)
         if ((fname_su!="" or lname_su!="") and (password_su!="") and (repassword_su!="") and (year_su!="") and (month_su!="") and (date_su!="") and (username_su!="")):
-            if ((username_su=="admin")):              
+            if ((username_su=="admin") or (username_su=="smartward")):              
                 self.signup_username_edit.setText("")
                 self.username_error_label.setText("Username taken.")
             else:
                 if (password_su==repassword_su):
-                    mycursor=mydb.cursor()
-                    sql = "INSERT INTO users (firstname,lastname,username,password,dob_year,dob_month,dob_date) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-                    val = (fname_su,lname_su,username_su,password_su,year_su,month_su,date_su)
-                    mycursor.execute(sql, val)
-                    mydb.commit()
-                    mycursor.close()
-                    print ("......................................")
-                    print ("Signup Successful.")
-                    print ("......................................")
-                    username.append(username_su)
-                    #print (username)
+                    print ("First Name: ",fname_su)
+                    print ("Last Name: ",lname_su)
+                    print ("Username: ",username_su)
+                    print ("Date of Birth: ",dob_su)
                     self.clearsignuplabels()
-                    self.username_edit.setText("")                                       
+                    self.username_edit.setText("")
                     self.refertologin()                    
                 else:
                     self.signup_password_edit.setText("")
                     self.signup_repassword_edit.setText("")
                     self.repass_error_label.setText("Password do not match.")
         else:
-            self.repass_error_label.setText("Empty field.")           
-                         
+            self.repass_error_label.setText("Empty field.")             
         
     ####################################################################################################
 
     ####for signin#####################################################################################
     def loginfxn(self):        
-        uname_login=self.username_edit.text().lower().strip()
-        password_login=self.password_edit.text().strip()
-        mycursor = mydb.cursor(buffered=True)
-        sql = "SELECT * FROM users WHERE username=%s"
-        mycursor.execute(sql,(uname_login,))        
-        records = mycursor.fetchall()
-        for row in records:
-            usernamefromdb=row[3].strip().lower()
-            passwordfromdb=row[4].strip()
-        if (uname_login=="" or password_login==""):
-            self.sign_empty_error_label.setText("Username or password empty.")          
-        else:            
+        uname_login=self.username_edit.text()
+        password_login=self.password_edit.text()
+        if ((uname_login!="")and(password_login!="")):
             self.sign_empty_error_label.setText("")
-            if (uname_login not in username):
-                self.sign_empty_error_label.setText("Not allowed.")
-                self.password_edit.setEchoMode(QtWidgets.QLineEdit.Password)
-                password_login=self.password_edit.setText("")              
-            elif (uname_login==usernamefromdb and password_login==passwordfromdb):
+            if ((uname_login=="admin" and password_login=="admin") or (uname_login=="smartward" and password_login=="smartward")):
                 if (uname_login=="admin" and password_login=="admin"):
                     self.stackedWidget.setCurrentIndex(4)
-                    self.statusbar.showMessage("Logged In.(Admin):"+str(uname_login)+"                          "+"© Smartward")
-                    print('Logged in as Admin.:'+str(uname_login))
-                    MainWindow.setWindowTitle("SmartWard-Admin- Welcome "+str(uname_login))
+                    print('Logged in as admin :'+ str(uname_login))
+                    MainWindow.setWindowTitle("SmartWard-Admin - Welcome "+str(uname_login))
                     password_login=self.password_edit.setText("")
                 else:
                     self.stackedWidget.setCurrentIndex(3)
-                    self.statusbar.showMessage("Logged In.(User):"+str(uname_login)+"                          "+"© Smartward")
-                    print('Logged in as User.:'+str(uname_login))
+                    print('Logged in as user :'+ str(uname_login))
                     MainWindow.setWindowTitle("SmartWard-User- Welcome "+str(uname_login))
                     password_login=self.password_edit.setText("")
             else:
                 self.sign_empty_error_label.setText("Not allowed.")
-                self.password_edit.setEchoMode(QtWidgets.QLineEdit.Password)
                 password_login=self.password_edit.setText("")
-        mycursor.close()
+        else:
+            self.sign_empty_error_label.setText("Username or password empty.")
     ####################################################################################################
 
     def setupUi(self, MainWindow):
-        MainWindow.setObjectName("MainWindow")        
-        MainWindow.setFixedSize(800, 600)
-        icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("logo.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        MainWindow.setWindowIcon(icon)
+        MainWindow.setObjectName("MainWindow")
+        MainWindow.resize(800, 600)
         MainWindow.setStyleSheet("\n"
-"background-color: white;")
+"background-color: rgb(0, 255, 0);")
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.stackedWidget = QtWidgets.QStackedWidget(self.centralwidget)
-        #(70, 45, 671, 491)
-        self.stackedWidget.setGeometry(QtCore.QRect(0, 0, 800, 620))
+        self.stackedWidget.setGeometry(QtCore.QRect(70, 45, 671, 491))
         self.stackedWidget.setStyleSheet("background:qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0, stop:0 rgba(0, 0, 0, 255), stop:0.05 rgba(14, 8, 73, 255), stop:0.36 rgba(28, 17, 145, 255), stop:0.6 rgba(126, 14, 81, 255), stop:0.75 rgba(234, 11, 11, 255), stop:0.79 rgba(244, 70, 5, 255), stop:0.86 rgba(255, 136, 0, 255), stop:0.935 rgba(239, 236, 55, 255));")
         self.stackedWidget.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.stackedWidget.setObjectName("stackedWidget")
@@ -180,7 +133,7 @@ class Ui_MainWindow(object):
         self.home = QtWidgets.QWidget()
         self.home.setObjectName("home")
         self.loginpage_refer_fromhome = QtWidgets.QPushButton(self.home)
-        self.loginpage_refer_fromhome.setGeometry(QtCore.QRect(515, 330, 211, 41))
+        self.loginpage_refer_fromhome.setGeometry(QtCore.QRect(390, 330, 211, 41))
         self.loginpage_refer_fromhome.setStyleSheet("color:white;\n"
 "font-size:20px;")
         self.loginpage_refer_fromhome.setObjectName("loginpage_refer_fromhome")
@@ -188,7 +141,7 @@ class Ui_MainWindow(object):
         self.loginpage_refer_fromhome.clicked.connect(self.refertologin)
         ######################################################################
         self.signuppage_refer_fromhome = QtWidgets.QPushButton(self.home)
-        self.signuppage_refer_fromhome.setGeometry(QtCore.QRect(515, 380, 211, 41))
+        self.signuppage_refer_fromhome.setGeometry(QtCore.QRect(390, 380, 211, 41))
         self.signuppage_refer_fromhome.setStyleSheet("color:white;\n"
 "font-size:20px;")
         self.signuppage_refer_fromhome.setObjectName("signuppage_refer_fromhome")
@@ -196,7 +149,7 @@ class Ui_MainWindow(object):
         self.signuppage_refer_fromhome.clicked.connect(self.refertosignup)
         ######################################################################
         self.homepage_info = QtWidgets.QLabel(self.home)
-        self.homepage_info.setGeometry(QtCore.QRect(75, 70, 651, 171))
+        self.homepage_info.setGeometry(QtCore.QRect(10, 70, 651, 171))
         self.homepage_info.setStyleSheet("color:white;\n"
 "font-size:24px;\n"
 "font-family:\"Consolas\";\n"
@@ -204,7 +157,7 @@ class Ui_MainWindow(object):
         self.homepage_info.setAlignment(QtCore.Qt.AlignCenter)
         self.homepage_info.setObjectName("homepage_info")
         self.exit_from_home = QtWidgets.QPushButton(self.home)
-        self.exit_from_home.setGeometry(QtCore.QRect(515, 430, 211, 41))
+        self.exit_from_home.setGeometry(QtCore.QRect(390, 430, 211, 41))
         self.exit_from_home.setStyleSheet("color:white;\n"
 "font-size:20px;")
         self.exit_from_home.setObjectName("exit_from_home")
@@ -219,7 +172,7 @@ class Ui_MainWindow(object):
         self.signup = QtWidgets.QWidget()
         self.signup.setObjectName("signup")
         self.signup_box = QtWidgets.QGroupBox(self.signup)
-        self.signup_box.setGeometry(QtCore.QRect(100, 70, 611, 391))
+        self.signup_box.setGeometry(QtCore.QRect(30, 40, 611, 391))
         self.signup_box.setStyleSheet("background:rgb(0, 0, 255);")
         self.signup_box.setTitle("")
         self.signup_box.setAlignment(QtCore.Qt.AlignCenter)
@@ -319,7 +272,7 @@ class Ui_MainWindow(object):
         self.signup_year_edit.setText("")
         self.signup_year_edit.setObjectName("signup_year_edit")
         self.signup_month_edit = QtWidgets.QLineEdit(self.signup_box)
-        self.signup_month_edit.setGeometry(QtCore.QRect(125, 300, 91, 41))
+        self.signup_month_edit.setGeometry(QtCore.QRect(120, 300, 91, 41))
         self.signup_month_edit.setStyleSheet("border-radius:20px;\n"
 "color:blue;\n"
 "background:yellow;\n"
@@ -331,7 +284,7 @@ class Ui_MainWindow(object):
         self.signup_month_edit.setText("")
         self.signup_month_edit.setObjectName("signup_month_edit")
         self.signup_day_edit = QtWidgets.QLineEdit(self.signup_box)
-        self.signup_day_edit.setGeometry(QtCore.QRect(220, 300, 91, 41))
+        self.signup_day_edit.setGeometry(QtCore.QRect(210, 300, 91, 41))
         self.signup_day_edit.setStyleSheet("border-radius:20px;\n"
 "color:blue;\n"
 "background:yellow;\n"
@@ -434,7 +387,7 @@ class Ui_MainWindow(object):
         self.date_label_signup.setStyleSheet("color:white;")
         self.date_label_signup.setObjectName("date_label_signup")
         self.signin_refer_pushbutton = QtWidgets.QPushButton(self.signup)
-        self.signin_refer_pushbutton.setGeometry(QtCore.QRect(100, 470, 261, 41))
+        self.signin_refer_pushbutton.setGeometry(QtCore.QRect(210, 440, 261, 41))
         self.signin_refer_pushbutton.setStyleSheet("border-radius:20px;\n"
 "color:black;\n"
 "background:red;\n"
@@ -447,7 +400,7 @@ class Ui_MainWindow(object):
         self.signin_refer_pushbutton.clicked.connect(self.refertologin)
         ########################################################################        
         self.exit_from_signuppage = QtWidgets.QPushButton(self.signup)
-        self.exit_from_signuppage.setGeometry(QtCore.QRect(615, 470, 101, 41))
+        self.exit_from_signuppage.setGeometry(QtCore.QRect(570, 440, 101, 41))
         self.exit_from_signuppage.setStyleSheet("border-radius:20px;\n"
 "color:black;\n"
 "background:red;\n"
@@ -467,7 +420,7 @@ class Ui_MainWindow(object):
         self.login = QtWidgets.QWidget()
         self.login.setObjectName("login")
         self.signin_box = QtWidgets.QGroupBox(self.login)
-        self.signin_box.setGeometry(QtCore.QRect(140, 120, 511, 321))
+        self.signin_box.setGeometry(QtCore.QRect(90, 70, 511, 321))
         self.signin_box.setStyleSheet("background:blue;")
         self.signin_box.setTitle("")
         self.signin_box.setObjectName("signin_box")
@@ -508,13 +461,7 @@ class Ui_MainWindow(object):
         self.username_edit.setAlignment(QtCore.Qt.AlignCenter)
         self.username_edit.setObjectName("username_edit")
         ##############################################################################
-        completer=QtWidgets.QCompleter(sorted(username))
-        font = QtGui.QFont()
-        font.setPointSize(16)
-        completer.popup().setFont(font)
-        completer.setCaseSensitivity(QtCore.Qt.CaseInsensitive)
-        self.username_edit.setCompleter(completer)
-        #self.username_edit.returnPressed.connect(self.loginfxn)        
+        self.username_edit.returnPressed.connect(self.loginfxn)        
         #############################################################################
         self.password_edit = QtWidgets.QLineEdit(self.signin_box)
         self.password_edit.setGeometry(QtCore.QRect(130, 150, 221, 51))
@@ -546,7 +493,7 @@ class Ui_MainWindow(object):
 "")
         self.show_password_pushbutton.setObjectName("show_password_pushbutton")
         ##show password###########################################################
-        self.show_password_pushbutton.clicked.connect(self.show_password)
+        self.show_password_pushbutton.clicked.connect(self.show_password)        
         #########################################################################
         self.hide_password_pushbutton = QtWidgets.QPushButton(self.signin_box)
         self.hide_password_pushbutton.setGeometry(QtCore.QRect(430, 160, 61, 41))
@@ -578,7 +525,7 @@ class Ui_MainWindow(object):
         self.signin_pushbutton.clicked.connect(self.loginfxn)
         ###########################################################################
         self.signup_refer_pushbutton = QtWidgets.QPushButton(self.login)
-        self.signup_refer_pushbutton.setGeometry(QtCore.QRect(140, 450, 251, 41))
+        self.signup_refer_pushbutton.setGeometry(QtCore.QRect(120, 400, 451, 41))
         self.signup_refer_pushbutton.setStyleSheet("border-radius:20px;\n"
 "color:black;\n"
 "background:red;\n"
@@ -614,7 +561,7 @@ class Ui_MainWindow(object):
         self.signin_username_label.setObjectName("signin_username_label")  
                     
         self.exit_from_signinpage = QtWidgets.QPushButton(self.login)
-        self.exit_from_signinpage.setGeometry(QtCore.QRect(555, 450, 101, 41))
+        self.exit_from_signinpage.setGeometry(QtCore.QRect(570, 440, 101, 41))
         self.exit_from_signinpage.setStyleSheet("border-radius:20px;\n"
 "color:black;\n"
 "background:red;\n"
@@ -634,19 +581,19 @@ class Ui_MainWindow(object):
         self.userpage = QtWidgets.QWidget()
         self.userpage.setObjectName("userpage")
         self.Welcome_label = QtWidgets.QLabel(self.userpage)
-        self.Welcome_label.setGeometry(QtCore.QRect(200, 50, 370, 61))
+        self.Welcome_label.setGeometry(QtCore.QRect(145, 30, 370, 61))
         font = QtGui.QFont()
         font.setFamily("Consolas")
         font.setPointSize(18)
         self.Welcome_label.setFont(font)
         self.Welcome_label.setStyleSheet("background:yellow;\n"
-"color:black;\n""border-radius:20px;")
+"color:black;")
         self.Welcome_label.setAlignment(QtCore.Qt.AlignCenter)
         self.Welcome_label.setObjectName("Welcome_label")       
 
         ######open#############################################################
         self.logout_from_loggedinpage = QtWidgets.QPushButton(self.userpage)
-        self.logout_from_loggedinpage.setGeometry(QtCore.QRect(535, 490, 101, 41))
+        self.logout_from_loggedinpage.setGeometry(QtCore.QRect(465, 440, 101, 41))
         self.logout_from_loggedinpage.setStyleSheet("border-radius:20px;\n"
 "color:black;\n"
 "background:red;\n"
@@ -662,7 +609,7 @@ class Ui_MainWindow(object):
 
         ######open####################################################################
         self.exit_from_loggedinpage = QtWidgets.QPushButton(self.userpage)
-        self.exit_from_loggedinpage.setGeometry(QtCore.QRect(640, 490, 101, 41))
+        self.exit_from_loggedinpage.setGeometry(QtCore.QRect(570, 440, 101, 41))
         self.exit_from_loggedinpage.setStyleSheet("border-radius:20px;\n"
 "color:black;\n"
 "background:red;\n"
@@ -683,19 +630,19 @@ class Ui_MainWindow(object):
         self.adminpage = QtWidgets.QWidget()
         self.adminpage.setObjectName("adminpage")
         self.Welcome_label_admin = QtWidgets.QLabel(self.adminpage)
-        self.Welcome_label_admin.setGeometry(QtCore.QRect(200, 50, 380, 61))
+        self.Welcome_label_admin.setGeometry(QtCore.QRect(145, 30, 390, 61))
         font = QtGui.QFont()
         font.setFamily("Consolas")
         font.setPointSize(18)
         self.Welcome_label_admin.setFont(font)
         self.Welcome_label_admin.setStyleSheet("background:yellow;\n"
-"color:black;\n""border-radius:20px;")
+"color:black;")
         self.Welcome_label_admin.setAlignment(QtCore.Qt.AlignCenter)
         self.Welcome_label_admin.setObjectName("Welcome_label_admin")
 
          ######open#############################################################
         self.logout_from_adminpage = QtWidgets.QPushButton(self.adminpage)
-        self.logout_from_adminpage.setGeometry(QtCore.QRect(535, 490, 101, 41))
+        self.logout_from_adminpage.setGeometry(QtCore.QRect(465, 440, 101, 41))
         self.logout_from_adminpage.setStyleSheet("border-radius:20px;\n"
 "color:black;\n"
 "background:red;\n"
@@ -711,7 +658,7 @@ class Ui_MainWindow(object):
 
          #open########################################################################
         self.exit_from_adminpage = QtWidgets.QPushButton(self.adminpage)
-        self.exit_from_adminpage.setGeometry(QtCore.QRect(640, 490, 101, 41))
+        self.exit_from_adminpage.setGeometry(QtCore.QRect(570, 440, 101, 41))
         self.exit_from_adminpage.setStyleSheet("border-radius:20px;\n"
 "color:black;\n"
 "background:red;\n"
@@ -737,7 +684,6 @@ class Ui_MainWindow(object):
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
-        self.statusbar.showMessage("© Smartward")
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
@@ -770,7 +716,7 @@ class Ui_MainWindow(object):
         self.signin_username_label.setText(_translate("MainWindow", "Username"))
         self.hide_password_pushbutton.setText(_translate("MainWindow", "Hide"))
         self.show_password_pushbutton.setText(_translate("MainWindow", "Show"))
-        self.signup_refer_pushbutton.setText(_translate("MainWindow", "Create an account"))
+        self.signup_refer_pushbutton.setText(_translate("MainWindow", "Don\'t have an account!! Sign up instead!"))
         self.home_from_signin.setText(_translate("MainWindow", "Home"))
         self.exit_from_signinpage.setText(_translate("MainWindow", "Exit"))
         self.Welcome_label.setText(_translate("MainWindow", "Welcome to your user page!!!"))
