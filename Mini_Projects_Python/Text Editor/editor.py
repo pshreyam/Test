@@ -4,16 +4,17 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 
-class Ui_MainWindow(object):
+class Ui_MainWindow(QWidget):
     
     def clear(self):
         self.textEdit.setText("")
         
     def createnewfile(self):
-        f=open('newfile1.txt','w+')
+        MainWindow.setWindowTitle("Text Editor -*New File")
         
     def openfile(self,name):
-        name='file.txt'
+        path=sys.path[0]
+        name=QFileDialog.getOpenFileName(self,"Open File",path,"*.txt")[0]
         file=open(name,'r')
         text=file.read()
         self.textEdit.setText(text)
@@ -27,11 +28,12 @@ class Ui_MainWindow(object):
         file.close()
         
     def saveasfile(self):
-        name = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File')
-        file=open(name,'w')        
+        name = QFileDialog.getSaveFileName(self,'Save File')[0]
+        file=open(name,'w')
         text=self.textEdit.toPlainText()
         file.write(text)
         file.close()
+        MainWindow.setWindowTitle("Text Editor -"+name)
         
     def setupUi(self, MainWindow):               
         MainWindow.setObjectName("MainWindow")
@@ -73,7 +75,7 @@ class Ui_MainWindow(object):
         self.actionSave_As = QtWidgets.QAction(MainWindow)
         self.actionSave_As.setShortcut("Ctrl+Shift+S")
         self.actionSave_As.setObjectName("actionSave_As")
-        self.actionSave_As.triggered.connect(self.savefile)
+        self.actionSave_As.triggered.connect(self.saveasfile)
         
 
         self.actionClear = QtWidgets.QAction(MainWindow)
