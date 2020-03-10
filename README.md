@@ -9,3 +9,4 @@
 <img src="Mini_Projects_Python/Rock%20Paper%20Scissors/paper.png" width=150>
 <img src="Mini_Projects_Python/Rock%20Paper%20Scissors/scissors.png" width=150>
 <img src="Mini_Projects_Python/Rock%20Paper%20Scissors/user.png" width=150></p>
+<h4> Highlight: <a href="https://github.com/pshreyam/Python/tree/master/Mini_Projects_Python/Text%20Editor">Text editor</a></h4>
