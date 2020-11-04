@@ -1,2 +1,0 @@
-This is for learning python file handling.
-Thank You!HelloHello
