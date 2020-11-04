@@ -1,7 +1,0 @@
-This is a very entertaining game that aims in provinding instant entertainment to users.
-This is a game that generates random output which is priority based.
-Here;
-Rock wins scissors
-Scissors wins paper
-Paper wins rock
-All copyright is vested in me.(Shreyam)
