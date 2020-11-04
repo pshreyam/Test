@@ -1,89 +1,153 @@
+from os import environ
+
 from PyQt5 import QtCore, QtGui, QtWidgets
+# not a good idea to import all the components fron modules
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
-from python_rps import *
+from rps_engine import play
 
+
+def suppress_qt_warnings():
+    """
+    Suppresses Qt Warnings
+    """
+    environ["QT_DEVICE_PIXEL_RATIO"] = "0"
+    environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
+    environ["QT_SCREEN_SCALE_FACTORS"] = "1"
+    environ["QT_SCALE_FACTOR"] = "1"
+
+   
 class Ui_MainWindow(object):
-    def set_user_computer(self,choice,user):
+    def set_user_computer(self, choice, user):
         rock = QPixmap('rock.png')
-        paper= QPixmap('paper.png')
-        scissors=QPixmap('scissors.png')
+        paper = QPixmap('paper.png')
+        scissors = QPixmap('scissors.png')
         self.label_user.setStyleSheet("background:blue;\n""border-radius:30px;")
         self.label_computer.setStyleSheet("background:blue;\n""border-radius:30px;")
-        ####for computer##########
-        if (choice=="paper"):
+        
+        # for computer
+        if choice == "paper":
             self.label_computer.setPixmap(paper)
-        elif (choice=="scissors"):
+        elif choice == "scissors":
             self.label_computer.setPixmap(scissors)
         else:
             self.label_computer.setPixmap(rock)
-        #########################
-        ####for user##################
-        if (user=="paper"):
+        
+        # for user
+        if user == "paper":
             self.label_user.setPixmap(paper)
-        elif (user=="scissors"):
+        elif user == "scissors":
             self.label_user.setPixmap(scissors)
         else:
             self.label_user.setPixmap(rock)
-        #############################
-            
-    def ViewHelp(self):
-        pass
-    def About(self):
-        pass
-    def save(self):
-        pass
+             
+    def view_help(self):
+        """ Implement help functionalities using this function
+        Pop up a help dialog box.
+        """
+        msg = QMessageBox()
+        msg.setWindowOpacity(0.97)
+        msg.setIcon(QMessageBox.Information)
+        msg.setStyleSheet("background-image: url('bg.jpg');\n")
+
+        msg.setText("<h1>Help for Rock Paper Scissors</h1>")
+        msg.setInformativeText("""
+           <p>This game does not require any mental skill! It is just random play!</p>
+            <h4>Some shortcuts:</h4>
+            <ul>
+                <li>Ctrl + A = About Us</li>
+                <li>Ctrl + H = Help</li>
+                <li>Ctrl + R = Reset Game</li>
+                <li>Ctrl + Q = Exit</li>
+            </ul>
+            <p> Use the three buttons for choosing rock, paper or scissors and 
+            play with the computer!</p>
+            <h2>Best Of Luck!</h2>
+        """)
+        msg.setWindowTitle("Help - Rock Paper Scissors")
+        msg.setStandardButtons(QMessageBox.Ok)            
+        retval = msg.exec_()
+      
+    def about(self):
+        """ Implement about functionalities using this function
+        Pop up an about dialog box.
+        """
+        msg = QMessageBox()
+        msg.setWindowOpacity(0.97)
+        msg.setIcon(QMessageBox.Information)
+        msg.setStyleSheet("background-image: url('bg.jpg');\n")
+
+        msg.setText("<h1>Welcome to Rock Paper Scissors!</h1>")
+        msg.setInformativeText("""
+            <p>This is a very entertaining game that aims in provinding instant entertainment to users.\n 
+            This is a game that generates random output which is priority based.</p>
+            <br>
+            <h4>Here;</h4>
+            <ul>
+                <li>Rock wins scissors</li>
+                <li>Scissors wins paper</li>
+                <li>Paper wins rock</li>
+            </ul>
+            <h1></h1>
+            v1.0.2
+            © Shreyam Pokharel😂😂
+        """)
+        msg.setWindowTitle("About Rock Paper Scissors")
+        msg.setStandardButtons(QMessageBox.Ok)            
+        retval = msg.exec_()
 
     def reset(self):
         self.label.setText("")
-        computer=QPixmap('computer.png')
-        user=QPixmap('user.png')
+        computer = QPixmap('computer.png')
+        user = QPixmap('user.png')
         self.label.move(30,60)
         self.label.setText("Let's Play!!!")
         self.label_user.setStyleSheet("background:blue;\n""border-radius:30px;")
         self.label_user.setPixmap(user)
         self.label_computer.setStyleSheet("background:blue;\n""border-radius:30px;")
         self.label_computer.setPixmap(computer)
-        user=""
-        self.statusbar.showMessage("Reseting....",1000)
+        user = ""
+        self.statusbar.showMessage("Reseting...", 1000)
 
     def userRock(self):
-        user="rock"
-        result,choice=play(user)
-        self.label.move(90,250)
+        self.statusbar.showMessage("Playing...")
+        user = "rock"
+        result, choice = play(user)
+        self.label.move(90, 250)
         self.label.setText(result)
-        self.set_user_computer(choice,user)
+        self.set_user_computer(choice, user)
         self.statusbar.showMessage("Computer chose: "+choice+"    "+"You chose: "+user)
-        user=""
+        user = ""
 
     def userPaper(self):
-        user="paper"
-        result,choice=play(user)
-        self.label.move(90,250)
+        self.statusbar.showMessage("Playing...")
+        user = "paper"
+        result, choice = play(user)
+        self.label.move(90, 250)
         self.label.setText(result)
-        self.set_user_computer(choice,user)
+        self.set_user_computer(choice, user)
         self.statusbar.showMessage("Computer chose: "+choice+"    "+"You chose: "+user)
-        user=""
+        user = ""
         
-
     def userScissors(self):
-        user="scissors"
-        result,choice=play(user)
-        self.label.move(90,250)
+        self.statusbar.showMessage("Playing...")
+        user = "scissors"
+        result,choice = play(user)
+        self.label.move(90, 250)
         self.label.setText(result)
-        self.set_user_computer(choice,user)
+        self.set_user_computer(choice, user)
         self.statusbar.showMessage("Computer chose: "+choice+"    "+"You chose: "+user)
-        user=""
-        
+        user = ""
         
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.setFixedSize(800, 600)
+        MainWindow.setWindowOpacity(0.96)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("rock.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap("icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
-        #MainWindow.setStyleSheet("background-image:url(rps_background.png);")        
+        MainWindow.setStyleSheet("background-image: url('bg.jpg');\n")        
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
 
@@ -148,31 +212,34 @@ class Ui_MainWindow(object):
         font.setFamily("Consolas")
         font.setPointSize(18)
         self.label.setFont(font)
+        self.label.setStyleSheet("color: black;\nbackground: None;\n")
         self.label.setObjectName("label")
         self.label.setText("Let's Play!!!")
 
-        self.userlabel= QtWidgets.QLabel(self.centralwidget)
+        self.userlabel = QtWidgets.QLabel(self.centralwidget)
         self.userlabel.setGeometry(QtCore.QRect(300, 90, 200, 30))
         self.userlabel.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
         font = QtGui.QFont()
         font.setFamily("Consolas")
         font.setPointSize(18)
         self.userlabel.setFont(font)
+        self.userlabel.setStyleSheet("color: black;\nbackground: None;\n")
         self.userlabel.setObjectName("userlabel")
         self.userlabel.setText("User")
 
-        self.computerlabel= QtWidgets.QLabel(self.centralwidget)
+        self.computerlabel = QtWidgets.QLabel(self.centralwidget)
         self.computerlabel.setGeometry(QtCore.QRect(530, 90, 200, 30))
         self.computerlabel.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
         font = QtGui.QFont()
         font.setFamily("Consolas")
         font.setPointSize(18)
         self.computerlabel.setFont(font)
+        self.computerlabel.setStyleSheet("color: black;\nbackground: None;\n")
         self.computerlabel.setObjectName("computerlabel")
         self.computerlabel.setText("Computer") 
 
-        computer=QPixmap('computer.png')
-        user=QPixmap('user.png')
+        computer = QPixmap('computer.png')
+        user = QPixmap('user.png')
         
         self.label_user = QtWidgets.QLabel(self.centralwidget)
         self.label_user.setGeometry(QtCore.QRect(300, 130, 200, 200))
@@ -211,16 +278,11 @@ class Ui_MainWindow(object):
         self.actionReset = QtWidgets.QAction(MainWindow)
         self.actionReset.setObjectName("actionReset")
         self.actionReset.setShortcut("Ctrl+R")
-        self.actionReset.triggered.connect(self.reset)
-        self.actionSave = QtWidgets.QAction(MainWindow)
-        self.actionSave.setObjectName("actionSave")
-        self.actionSave.setShortcut("Ctrl+S")
-        self.actionSave.triggered.connect(self.save)       
+        self.actionReset.triggered.connect(self.reset)     
         self.actionExit = QtWidgets.QAction(MainWindow)
         self.actionExit.setObjectName("actionExit")
-        self.actionExit.setShortcut("Ctrl+E")
+        self.actionExit.setShortcut("Ctrl+Q")
         self.actionExit.triggered.connect(MainWindow.close)
-        self.menuOptions.addAction(self.actionSave)
         self.menuOptions.addSeparator()
         self.menuOptions.addAction(self.actionReset)
         self.menuOptions.addSeparator()
@@ -230,12 +292,12 @@ class Ui_MainWindow(object):
         self.actionViewHelp = QtWidgets.QAction(MainWindow)
         self.actionViewHelp.setObjectName("actionViewHelp")
         self.actionViewHelp.setShortcut("Ctrl+H")
-        self.actionViewHelp.triggered.connect(self.ViewHelp)
+        self.actionViewHelp.triggered.connect(self.view_help)
 
         self.actionAbout = QtWidgets.QAction(MainWindow)
         self.actionAbout.setObjectName("actionAbout")
         self.actionAbout.setShortcut("Ctrl+A")
-        self.actionAbout.triggered.connect(self.About)
+        self.actionAbout.triggered.connect(self.about)
         
         self.menuHelp=QtWidgets.QMenu(self.menubar)
         self.menuHelp.setObjectName("menuHelp")
@@ -256,7 +318,6 @@ class Ui_MainWindow(object):
         self.info_label.setText(_translate("MainWindow", "Let us play Rock/ Paper/ Scissors:"))
         self.menuOptions.setTitle(_translate("MainWindow", "Game"))
         self.menuHelp.setTitle(_translate("MainWindow", "Help"))
-        self.actionSave.setText(_translate("MainWindow", "Save"))
         self.actionReset.setText(_translate("MainWindow", "Reset"))
         self.actionExit.setText(_translate("MainWindow", "Exit"))
         self.actionViewHelp.setText(_translate("MainWindow", "View Help"))
@@ -265,6 +326,7 @@ class Ui_MainWindow(object):
 
 if __name__ == "__main__":
     import sys
+    suppress_qt_warnings()
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
