@@ -1,0 +1,65 @@
+# To fetch all the todos
+
+query fetchAllTodos {
+  todos {
+    success
+    errors
+    todos {
+      description
+      completed
+      id
+    }
+  }
+}
+
+# To fetch a todo with id 1
+
+query fetchTodo {
+  todo(todoId: "1") {
+    success
+    errors
+    todo { id completed description dueDate }
+  }
+}
+
+# To create a new todo
+
+mutation newTodo {
+  createTodo(description:"Go to the dentist", dueDate:"24-10-2020") {
+    success
+    errors
+    todo {
+      id
+      completed
+      description
+    }
+  }
+}
+
+# To get a todo marked done
+
+mutation markDone {
+  markDone(todoId: "1") {
+    success
+    errors
+    todo { id completed description dueDate }
+  }
+}
+
+# To delete a todo with the given id
+
+mutation {
+  deleteTodo(todoId: "1") {
+    success
+    errors
+  }
+}
+
+# To update the due date for a todo
+
+mutation updateDueDate {
+  updateDueDate(todoId: "2", newDate: "25-10-2020") {
+    success
+    errors
+  }
+}
