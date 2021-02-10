@@ -12,7 +12,7 @@ class Stack:
     def pop(self):
         if self.isEmpty():
             print("Can't pop.")
-        	return None
+            return None
         return self.stack_list.pop()
             
     def top(self):
@@ -25,9 +25,7 @@ class Stack:
         print(self.stack_list)
         
     def isFull(self):
-    	return len(self.stack_list) >= self.max_size
+        return len(self.stack_list) >= self.max_size
       
     def isEmpty(self):
-        return len(self.stack_list) == 0:
-
-
+        return len(self.stack_list) == 0

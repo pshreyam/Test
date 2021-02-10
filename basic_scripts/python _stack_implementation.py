@@ -5,10 +5,10 @@ user_length = len(user)
 
 s1 = Stack(user_length)
 s2 = Stack(user_length)
- 
-for c in user: 
+
+for c in user:
     s1.push(c)
-    
+
 s1.view_stack()
 
 reverse = ''
