@@ -1,3 +1,5 @@
+# Practiced from Clear Code
+
 import pygame
 import sys
 import random
