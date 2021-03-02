@@ -36,6 +36,10 @@ while True:
             if x in range(10, 30) and y in range(SCREEN_HEIGHT-10-20, SCREEN_HEIGHT-10):
                 color = WHITE
 
+            if x not in range(0, 40):
+                point = pygame.rect.Rect(x, y, size, size)
+                pygame.draw.ellipse(screen, color, point)
+
         if event.type == pygame.MOUSEMOTION:
             if pygame.mouse.get_pressed()[0]:
                 x, y = event.pos
