@@ -1,0 +1,32 @@
+<style>
+.rock {
+    color: rgb(184, 68, 110);
+}
+.paper {
+    color: rgb(217, 48, 67);
+}
+.scissors {
+    color: rgb(112, 189, 53);
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.bold-italic {
+    font-weight: bold;
+    font-style: italic;
+}
+</style>
+
+<p>This is a very entertaining game that provides instant entertainment to users.</p>
+<p>This is a game that generates random output which is priority based.</p>
+<b style="color:red">Here:</b>
+<ul>
+    <li><span class="rock bold-italic">Rock</span> wins <span class="scissors bold">scissors</span></li>
+    <li><span class="scissors bold-italic">Scissors</span> wins <span class="paper bold">paper</span></li>
+    <li><span class="paper bold-italic">Paper</span> wins <span class="rock bold">rock</span></li>
+</ul>
+v1.0.2
+<br>
+© Shreyam Pokharel 😂😂

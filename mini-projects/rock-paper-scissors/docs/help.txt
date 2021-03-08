@@ -1,0 +1,11 @@
+<p>This game does not require any mental skill! It is just random play!</p>
+<b>Some shortcuts:</b>
+<ul>
+    <li>Ctrl + A = About Us</li>
+    <li>Ctrl + H = Help</li>
+    <li>Ctrl + R = Reset Game</li>
+    <li>Ctrl + Q = Exit</li>
+</ul>
+<p> Use the three buttons for choosing rock, paper or scissors and 
+play with the computer!</p>
+<h3>Best Of Luck! 👍</h3>
