@@ -4,38 +4,46 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 
+
+EDITOR_NAME = "TEXT EDITOR"
+
+
 class Ui_MainWindow(QWidget):
+    filename = None
     
     def clear(self):
         self.textEdit.setText("")
         
     def createnewfile(self):
-        MainWindow.setWindowTitle("Text Editor -*New File")
+        MainWindow.setWindowTitle(f"{EDITOR_NAME} -*New File")
+        self.clear()
+
+    def openfile(self):
+        name = QFileDialog.getOpenFileName(self, "Open File", sys.path[0], "*.txt")[0]
+        try:
+            with open(name, 'r') as file:
+                text = file.read()
+                self.textEdit.setText(text)
+        except Exception as e:
+            print(e)
+        else:
+            self.filename = name
+            MainWindow.setWindowTitle(f"{EDITOR_NAME} - {name}")
         
-    def openfile(self,name):
-        path=sys.path[0]
-        name=QFileDialog.getOpenFileName(self,"Open File",path,"*.txt")[0]
-        file=open(name,'r')
-        text=file.read()
-        self.textEdit.setText(text)
-        MainWindow.setWindowTitle("Text Editor -"+name)
-        
-    def savefile(self,name):
-        name='file.txt'
-        file=open(name,'w')
-        text=self.textEdit.toPlainText()
-        file.write(text)
-        file.close()
+    def savefile(self):
+        if self.filename:
+            with open(self.filename, 'w') as file:
+                text = self.textEdit.toPlainText()
+                file.write(text)
         
     def saveasfile(self):
-        name = QFileDialog.getSaveFileName(self,'Save File')[0]
-        file=open(name,'w')
-        text=self.textEdit.toPlainText()
-        file.write(text)
-        file.close()
-        MainWindow.setWindowTitle("Text Editor -"+name)
+        name = QFileDialog.getSaveFileName(self, "Save File")[0]
+        with open(name, 'w') as file:
+            text = self.textEdit.toPlainText()
+            file.write(text)
+        MainWindow.setWindowTitle(f"{EDITOR_NAME} - {name}")
         
-    def setupUi(self, MainWindow):               
+    def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1350, 690)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
@@ -96,7 +104,6 @@ class Ui_MainWindow(QWidget):
         self.actionRedo.setObjectName("actionRedo")
         self.actionRedo.setShortcut("Ctrl+Shift+Z")
 
-        
         self.actionExit = QtWidgets.QAction(MainWindow)
         self.actionExit.setObjectName("actionExit")
         self.actionView_Help = QtWidgets.QAction(MainWindow)
