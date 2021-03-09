@@ -31,11 +31,11 @@ class Ui_MainWindow(object):
         
         # for computer
         if choice == "paper":
-            self.label_computer.setPixmap(paper)
+            self.label_computer.setPixmap(paper.transformed(QTransform().scale(-1, 1)))
         elif choice == "scissors":
-            self.label_computer.setPixmap(scissors)
+            self.label_computer.setPixmap(scissors.transformed(QTransform().scale(-1, 1)))
         else:
-            self.label_computer.setPixmap(rock)
+            self.label_computer.setPixmap(rock.transformed(QTransform().scale(-1, 1)))
         
         # for user
         if user == "paper":
