@@ -21,24 +21,31 @@ BLUE = (0, 0, 255)
 GREEN = (0, 255, 0)
 PURPLE = (103, 47, 120)
 YELLOW = (247, 222, 27)
+MENU_BG = (44, 47, 82)
 
 color = BLACK
 size = 25
-
-screen.fill(WHITE)
-
 nodes = []
-
 x = y = None
+
+menu_bar = pygame.Surface((40, SCREEN_HEIGHT))
+menu_bar.fill(MENU_BG)
+
+canvas = pygame.Surface((SCREEN_WIDTH - 40, SCREEN_HEIGHT))
+canvas.fill(WHITE)
 
 def get_distance(start, end):
     return ((start[0] - end[0]) ** 2 + (start[1] - end[1]) ** 2) ** (1/2)
 
+def draw_button(color, pos):
+    button = pygame.rect.Rect(pos)
+    pygame.draw.rect(menu_bar, color, button)
+    return button
 
 class Grid:
     def __init__(self):
         self.show_grid = False
-        self.grid_size = (SCREEN_WIDTH - 40, SCREEN_HEIGHT)
+        self.grid_size = canvas.get_size()
         self.grid = pygame.Surface(self.grid_size, pygame.SRCALPHA)
 
     def draw_grid(self):
@@ -47,7 +54,7 @@ class Grid:
         for i in range(0, self.grid_size[1], 50):
             pygame.draw.aaline(self.grid, BLACK, (0, i), (SCREEN_WIDTH, i))
         self.grid.set_alpha(255)
-        screen.blit(self.grid, (40, 0))
+        canvas.blit(self.grid, (0, 0))
 
 while True:
     for event in pygame.event.get():
@@ -73,13 +80,15 @@ while True:
                     color = YELLOW
                 elif y in range(SCREEN_HEIGHT-10-20, SCREEN_HEIGHT-10):
                     color = WHITE
-
+            
             if x not in range(0, 40):
+                # adjusting x for drawing in a canvas
+                x -= 40
                 point = pygame.rect.Rect(x - size/2, y - size /2, size, size)
                 if nodes and get_distance(nodes[-1].center, (x, y)) <= size * 2:
-                    pygame.draw.line(screen, color, (x, y), nodes[-1].center, size)
+                    pygame.draw.line(canvas, color, (x, y), nodes[-1].center, size)
                 nodes.append(point)
-                pygame.draw.ellipse(screen, color, point)
+                pygame.draw.ellipse(canvas, color, point)
             else:
                 x = y = None
 
@@ -88,18 +97,20 @@ while True:
                 x, y = event.pos
 
                 if x not in range(0, 40):
+                    # adjusting x for drawing in a canvas
+                    x -= 40
                     point = pygame.rect.Rect(x - size/2, y - size /2, size, size)
                     if nodes and get_distance(nodes[-1].center, (x, y)) <= size * 2:
-                        pygame.draw.line(screen, color, (x, y), nodes[-1].center, size)
+                        pygame.draw.line(canvas, color, (x, y), nodes[-1].center, size)
                     nodes.append(point)
-                    pygame.draw.ellipse(screen, color, point)
+                    pygame.draw.ellipse(canvas, color, point)
                 else:
                     x = y = None
 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 # CLear screen with escape
-                screen.fill(WHITE)
+                canvas.fill(WHITE)
                 x = y = None
                 nodes.clear()
             
@@ -112,28 +123,28 @@ while True:
                     )
 
                     if filename:
-                        pygame.image.save(screen.subsurface((40, 0, SCREEN_WIDTH - 40, SCREEN_HEIGHT - 40)), filename)
+                        pygame.image.save(canvas, filename)
 
             if event.key == pygame.K_l:
                 # draw a line [Ctrl + L]
                 if pygame.key.get_mods() and pygame.KMOD_CTRL:
                     if x and y and len(nodes) >= 2:
-                        pygame.draw.line(screen, color, (x, y), nodes[-2].center, size)
+                        pygame.draw.line(canvas, color, (x, y), nodes[-2].center, size)
 
             if event.key == pygame.K_c:
                 # connect a node with the corners of the canvas [Ctrl + C]
                 if pygame.key.get_mods() and pygame.KMOD_CTRL:
                     if x and y:
-                        corners = [(40, 0), (40, SCREEN_HEIGHT), (SCREEN_WIDTH, SCREEN_HEIGHT), (SCREEN_WIDTH, 0)]
+                        corners = [(0, 0), (0, SCREEN_HEIGHT), (SCREEN_WIDTH, SCREEN_HEIGHT), (SCREEN_WIDTH, 0)]
                         for corner in corners:
-                            pygame.draw.line(screen, color, (x, y), corner, size)
+                            pygame.draw.line(canvas, color, (x, y), corner, size)
             
             if event.key == pygame.K_n:
                 # connect a node with other nodes [Ctrl + N]
                 if pygame.key.get_mods() and pygame.KMOD_CTRL:
                     if len(nodes) >= 2:
                         for node in nodes[:-1]:
-                            pygame.draw.line(screen, color, nodes[-1].center, node.center, size)
+                            pygame.draw.line(canvas, color, nodes[-1].center, node.center, size)
 
             if event.key == pygame.K_a:
                 # connect a node with all other nodes [Ctrl + A]
@@ -142,12 +153,17 @@ while True:
                         for node in nodes:
                             for other_node in nodes:
                                 if node is not other_node:
-                                    pygame.draw.line(screen, color, node.center, other_node.center, size)
+                                    pygame.draw.line(canvas, color, node.center, other_node.center, size)
 
             if event.key == pygame.K_f:
                 # connect a node with other nodes [Ctrl + F]
                 if pygame.key.get_mods() and pygame.KMOD_CTRL:
-                    screen.fill(color)
+                    canvas.fill(color)
+            
+            if event.key == pygame.K_r:
+                # clear list of nodes [Ctrl + R]
+                if pygame.key.get_mods() and pygame.KMOD_CTRL:
+                    nodes.clear()
 
             if event.key == pygame.K_LEFTBRACKET:
                 # Minimum size 10
@@ -159,32 +175,19 @@ while True:
                 if size < 100:
                     size += 10
 
-    menu_bar = pygame.rect.Rect(0, 0, 40, SCREEN_HEIGHT)
-    pygame.draw.rect(screen, (44, 47, 82), menu_bar)
+    screen.blit(menu_bar, (0, 0))
+    screen.blit(canvas, (40, 0))
 
-    red_button = pygame.rect.Rect(10, 10, 20, 20)
-    pygame.draw.rect(screen, RED, red_button)
+    draw_button(RED, (10, 10, 20, 20))
+    draw_button(BLACK, (10, 50, 20, 20))
+    draw_button(BLUE, (10, 90, 20, 20))
+    draw_button(GREEN, (10, 130, 20, 20))
+    draw_button(PURPLE, (10, 170, 20, 20))
+    draw_button(YELLOW, (10, 210, 20, 20))
+    draw_button(WHITE, (10, SCREEN_HEIGHT-10-20, 20, 20))
 
-    black_button = pygame.rect.Rect(10, 50, 20, 20)
-    pygame.draw.rect(screen, BLACK, black_button)
-
-    blue_button = pygame.rect.Rect(10, 90, 20, 20)
-    pygame.draw.rect(screen, BLUE, blue_button)
-
-    green_button = pygame.rect.Rect(10, 130, 20, 20)
-    pygame.draw.rect(screen, GREEN, green_button)
-
-    purple_button = pygame.rect.Rect(10, 170, 20, 20)
-    pygame.draw.rect(screen, PURPLE, purple_button)
-
-    yellow_button = pygame.rect.Rect(10, 210, 20, 20)
-    pygame.draw.rect(screen, YELLOW, yellow_button)
-
-    eraser_button = pygame.rect.Rect(10, SCREEN_HEIGHT-10-20, 20, 20)
-    pygame.draw.rect(screen, WHITE, eraser_button)
-
-    # grid = Grid()
-    # grid.draw_grid()
+    grid = Grid()
+    grid.draw_grid()
 
     pygame.display.update()
     clock.tick(FPS)
