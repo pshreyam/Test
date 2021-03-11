@@ -24,6 +24,7 @@ YELLOW = (247, 222, 27)
 MENU_BG = (44, 47, 82)
 
 color = BLACK
+bg_color = WHITE
 size = 25
 nodes = []
 x = y = None
@@ -31,8 +32,17 @@ x = y = None
 menu_bar = pygame.Surface((40, SCREEN_HEIGHT))
 menu_bar.fill(MENU_BG)
 
-canvas = pygame.Surface((SCREEN_WIDTH - 40, SCREEN_HEIGHT))
-canvas.fill(WHITE)
+canvas_background = pygame.Surface((SCREEN_WIDTH - 40, SCREEN_HEIGHT))
+canvas_background.fill(WHITE)
+
+canvas = pygame.Surface((SCREEN_WIDTH - 40, SCREEN_HEIGHT), pygame.SRCALPHA)
+
+class Mouse:
+    left = 1
+    middle = 2
+    right = 3
+    scroll_up = 4
+    scroll_down = 5
 
 def get_distance(start, end):
     return ((start[0] - end[0]) ** 2 + (start[1] - end[1]) ** 2) ** (1/2)
@@ -45,7 +55,7 @@ def draw_button(color, pos):
 class Grid:
     def __init__(self):
         self.show_grid = False
-        self.grid_size = canvas.get_size()
+        self.grid_size = canvas_background.get_size()
         self.grid = pygame.Surface(self.grid_size, pygame.SRCALPHA)
 
     def draw_grid(self):
@@ -54,7 +64,7 @@ class Grid:
         for i in range(0, self.grid_size[1], 50):
             pygame.draw.aaline(self.grid, BLACK, (0, i), (SCREEN_WIDTH, i))
         self.grid.set_alpha(255)
-        canvas.blit(self.grid, (0, 0))
+        canvas_background.blit(self.grid, (0, 0))
 
 while True:
     for event in pygame.event.get():
@@ -65,32 +75,50 @@ while True:
         if event.type == pygame.MOUSEBUTTONDOWN:
             x, y = event.pos
 
-            if x in range(10, 30):
-                if y in range(10, 30):
-                    color = RED
-                elif y in range(50, 70):
-                    color = BLACK
-                elif y in range(90, 110):
-                    color = BLUE
-                elif y in range(130, 150):
-                    color = GREEN
-                elif y in range(170, 190):
-                    color = PURPLE
-                elif y in range(210, 230):
-                    color = YELLOW
-                elif y in range(SCREEN_HEIGHT-10-20, SCREEN_HEIGHT-10):
-                    color = WHITE
-            
-            if x not in range(0, 40):
-                # adjusting x for drawing in a canvas
-                x -= 40
-                point = pygame.rect.Rect(x - size/2, y - size /2, size, size)
-                if nodes and get_distance(nodes[-1].center, (x, y)) <= size * 2:
-                    pygame.draw.line(canvas, color, (x, y), nodes[-1].center, size)
-                nodes.append(point)
-                pygame.draw.ellipse(canvas, color, point)
-            else:
-                x = y = None
+            if event.button == Mouse.left:
+                if x in range(10, 30):
+                    if y in range(10, 30):
+                        color = RED
+                    elif y in range(50, 70):
+                        color = BLACK
+                    elif y in range(90, 110):
+                        color = BLUE
+                    elif y in range(130, 150):
+                        color = GREEN
+                    elif y in range(170, 190):
+                        color = PURPLE
+                    elif y in range(210, 230):
+                        color = YELLOW
+                    elif y in range(SCREEN_HEIGHT-10-20, SCREEN_HEIGHT-10):
+                        color = WHITE
+                
+                if x not in range(0, 40):
+                    # adjusting x for drawing in a canvas
+                    x -= 40
+                    point = pygame.rect.Rect(x - size/2, y - size /2, size, size)
+                    nodes.append(point)
+                    pygame.draw.ellipse(canvas, color, point)
+                else:
+                    x = y = None
+                    
+            elif event.button == Mouse.right:
+                if x in range(10, 30):
+                    if y in range(10, 30):
+                        bg_color = RED
+                    elif y in range(50, 70):
+                        bg_color = BLACK
+                    elif y in range(90, 110):
+                        bg_color = BLUE
+                    elif y in range(130, 150):
+                        bg_color = GREEN
+                    elif y in range(170, 190):
+                        bg_color = PURPLE
+                    elif y in range(210, 230):
+                        bg_color = YELLOW
+                    elif y in range(SCREEN_HEIGHT-10-20, SCREEN_HEIGHT-10):
+                        bg_color = WHITE
+                
+                canvas_background.fill(bg_color)
 
         if event.type == pygame.MOUSEMOTION:
             if pygame.mouse.get_pressed()[0]:
@@ -109,8 +137,10 @@ while True:
 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
-                # CLear screen with escape
-                canvas.fill(WHITE)
+                # clear screen with escape
+                # clean up the nodes and the last clicked point
+                canvas_background.fill(bg_color)
+                canvas.fill((0, 0, 0, 0))
                 x = y = None
                 nodes.clear()
             
@@ -123,7 +153,7 @@ while True:
                     )
 
                     if filename:
-                        pygame.image.save(canvas, filename)
+                        pygame.image.save(canvas_background, filename)
 
             if event.key == pygame.K_l:
                 # draw a line [Ctrl + L]
@@ -155,11 +185,6 @@ while True:
                                 if node is not other_node:
                                     pygame.draw.line(canvas, color, node.center, other_node.center, size)
 
-            if event.key == pygame.K_f:
-                # connect a node with other nodes [Ctrl + F]
-                if pygame.key.get_mods() and pygame.KMOD_CTRL:
-                    canvas.fill(color)
-            
             if event.key == pygame.K_r:
                 # clear list of nodes [Ctrl + R]
                 if pygame.key.get_mods() and pygame.KMOD_CTRL:
@@ -176,7 +201,8 @@ while True:
                     size += 10
 
     screen.blit(menu_bar, (0, 0))
-    screen.blit(canvas, (40, 0))
+    screen.blit(canvas_background, (40, 0))
+    canvas_background.blit(canvas, (0, 0))
 
     draw_button(RED, (10, 10, 20, 20))
     draw_button(BLACK, (10, 50, 20, 20))
@@ -186,8 +212,8 @@ while True:
     draw_button(YELLOW, (10, 210, 20, 20))
     draw_button(WHITE, (10, SCREEN_HEIGHT-10-20, 20, 20))
 
-    grid = Grid()
-    grid.draw_grid()
+    # grid = Grid()
+    # grid.draw_grid()
 
     pygame.display.update()
     clock.tick(FPS)
