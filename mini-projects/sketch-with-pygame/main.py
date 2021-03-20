@@ -190,6 +190,16 @@ while True:
                 if pygame.key.get_mods() and pygame.KMOD_CTRL:
                     nodes.clear()
 
+            if event.key == pygame.K_z:
+                # Undo [Ctrl + Z]
+                # Not a perfect implementation since the lines
+                # drawn are not stored in nodes
+                if pygame.key.get_mods() and pygame.KMOD_CTRL:
+                    if nodes:
+                        last_node = nodes.pop()
+                        point = pygame.rect.Rect((last_node.x, last_node.y), last_node.size)
+                        pygame.draw.ellipse(canvas, bg_color, point)
+
             if event.key == pygame.K_LEFTBRACKET:
                 # Minimum size 10
                 if size > 10:
