@@ -8,4 +8,3 @@ from secrets import _chrome_path
 chrome_path=_chrome_path
 driver=webdriver.Chrome(chrome_path)
 driver.get("https://www.onlinekhabar.com/")
-
